@@ -1,0 +1,115 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+@section headscript
+{
+   <script src="/Scripts/jquery.signalR-1.0.1.min.js" type="text/javascript"></script>
+   <script src="/signalr/hubs" type="text/javascript"></script>
+   <script type="text/javascript">
+       $(function () {
+
+           //Card View Model
+           function cardViewModel(id,path,ownerViewModel) {
+               this.cardId = id;
+               this.path = ko.observable(path);
+               this.remove = function () { ownerViewModel.removeCard(this.cardId) }
+               this.notification = function (b) { notify = b }
+
+               var self = this;
+           }
+
+           //Card List (Deck) View Model
+           function cardListViewModel() {
+
+               this.hub = $.connection.deckHub;
+               this.deck = ko.observableArray([]);
+
+               var deck = this.deck;
+               var self = this;
+               var notify = true;
+
+               //Initializes the view model
+               this.init = function () {
+                   this.hub.server.getAll();
+               }
+
+               //Handlers for our Hub callbacks
+
+               this.hub.client.deckAll = function (allDeck) {
+
+                   var mappedCards = $.map(allDeck, function (item) {
+                       return new cardViewModel(item.cardId, item.path, self)
+                   });
+
+                   deck(mappedCards);
+               }
+
+
+               this.hub.client.reportError = function (error) {
+                   $("#error").text(error);
+                   $("#error").fadeIn(1000, function () {
+                       $("#error").fadeOut(3000);
+                   });
+               }
+
+
+               this.hub.client.cardRemoved = function (id) {
+                   var card = ko.utils.arrayFilter(deck(), function (value) { return value.cardId == id; })[0];
+                   deck.remove(card);
+               };
+
+               //View Model 'Commands'
+
+               //To remove a card
+               this.removeCard = function (id) {
+                   this.hub.server.removeCard(id);
+               }
+
+
+
+           }
+
+           $.connection.hub.logging = true;
+           var vm = new cardListViewModel();
+           ko.applyBindings(vm);
+           // Start the connection
+           $.connection.hub.start(function () { vm.init(); });
+
+       });
+
+
+   </script>
+}
+<div class="hero-unit">
+    <div>
+    <h1>
+        Weebix Deck Builder
+    </h1>
+    <p>
+        Let's create some cards!
+    </p>
+    </div>
+</div>
+<div class="container">
+    @using (Html.BeginForm("Index", "Deck", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div>
+            Select Card Image
+            <input type="file" name="file" />
+            <input type="submit" value="Upload Image" name="Command"/><br />
+        </div>
+    }
+    <div id="error" class="validation-summary-errors">
+    </div>
+    <div class="row" data-bind="template: { name: 'cardTemplate', foreach: deck }, visible: deck().length > 0">
+      
+    </div>
+    <script type="text/html" id="cardTemplate">
+    <div class="span2">
+       <img src="Content/images/backcard.png" class="img-polaroid" />
+       <input class="ui-button" type="button" href="#" data-bind="click: remove" value="x"></input>
+    </div>
+    </script>
+    
+</div>
+
