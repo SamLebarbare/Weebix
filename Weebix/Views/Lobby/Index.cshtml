@@ -1,86 +1,145 @@
 ﻿@{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Lobby";
 }
 @section headscript
 {
-   <script src="/Scripts/jquery.signalR-1.0.1.min.js" type="text/javascript"></script>
-   <script src="/signalr/hubs" type="text/javascript"></script>
-   <script type="text/javascript">
-       $(function () {
+    <script src="/Scripts/jquery.signalR-1.0.1.min.js" type="text/javascript"></script>
+    <script src="/signalr/hubs" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function () {
 
-           //Party View Model
-           function partyViewModel(id,name,status,createdAt, ownerViewModel) {
-               this.partyId = id;
-               this.name = ko.observable(path);
-               this.status = ko.observable(status);
+            //Party View Model
+            function partyViewModel(id, name, status,playersInGame, createdAt, ownerViewModel) {
+                this.partyId = id;
+                this.status = ko.observable(status);
+                this.playersInGame = ko.observable(playersInGame + " sur 10");
+                this.createdAt = ko.observable(createdAt);
+                this.name = ko.observable(name);
+                this.join = function () { ownerViewModel.joinParty(this.partyId) }
+                this.remove = function () { ownerViewModel.removeParty(this.partyId) }
+                this.notification = function (b) { notify = b }
 
-               this.remove = function () { ownerViewModel.removeCard(this.cardId) }
-               this.notification = function (b) { notify = b }
+                var self = this;
+            }
 
-               var self = this;
-           }
+            //Party List View Model
+            function partyListViewModel() {
 
-           //Party List View Model
-           function partyListViewModel() {
+                this.hub = $.connection.lobbyHub;
+                this.games = ko.observableArray([]);
+                this.newPartyName = ko.observable();
 
-               this.hub = $.connection.lobbyHub;
-               this.games = ko.observableArray([]);
+                var games = this.games;
+                var self = this;
+                var notify = true;
+                
 
-               var games = this.deck;
-               var self = this;
-               var notify = true;
+                //Initializes the view model
+                this.init = function () {
+                    this.hub.server.getAll();
+                }
 
-               //Initializes the view model
-               this.init = function () {
-                   this.hub.server.getAll();
-               }
+                //Handlers for our Hub callbacks
 
-               //Handlers for our Hub callbacks
+                this.hub.client.allGames = function (allGames) {
 
-               this.hub.client.allGames = function (allGames) {
+                    var mappedGames = $.map(allGames, function (item) {
+                        return new partyViewModel(item.partyId, item.name, item.status,item.playersInGame, item.createdAt, self)
+                    });
 
-                   var mappedGames = $.map(allGames, function (item) {
-                       return new partyViewModel(item.partyId, item.name,item.status,item.createdAt, self)
-                   });
-
-                   deck(mappedGames);
-               }
-
-
-               this.hub.client.reportError = function (error) {
-                   $("#error").text(error);
-                   $("#error").fadeIn(1000, function () {
-                       $("#error").fadeOut(3000);
-                   });
-               }
+                    games(mappedGames);
+                }
 
 
-               this.hub.client.partyRemoved = function (id) {
-                   var party = ko.utils.arrayFilter(deck(), function (value) { return value.partyId == id; })[0];
-                   deck.remove(party);
-               };
+                this.hub.client.reportError = function (error) {
+                    $("#error").text(error);
+                    $("#error").fadeIn(1000, function () {
+                        $("#error").fadeOut(3000);
+                    });
+                }
 
-               //View Model 'Commands'
+                this.hub.client.addParty = function (p) {
+                    games.push(new partyViewModel(p.partyId, p.name, p.status, p.playersInGame, p.createdAt, self));
+                };
 
-               //To remove a party
-               this.removeParty = function (id) {
-                   this.hub.server.removeParty(id);
-               }
+                this.hub.client.partyRemoved = function (id) {
+                    var party = ko.utils.arrayFilter(deck(), function (value) { return value.partyId == id; })[0];
+                    deck.remove(party);
+                };
+
+                this.hub.client.goToParty = function (pId) {
+                    window.location.href = "/party/?partyId=" + pId;
+                };
+
+                //View Model 'Commands'
+                this.createParty = function () {
+                    this.hub.server.createParty(this.newPartyName()).done(function () {
+                        console.log('Success!')
+                    }).fail(function (e) {
+                        console.warn(e);
+                    });
+
+                    this.newPartyName("");
+
+                };
+      
+               
+                this.joinParty = function (id) {
+                    this.hub.server.joinParty(id);
+                    this.hub.server.getAll();
+                };
+
+                this.removeParty = function (id) {
+                    this.hub.server.removeParty(id);
+                };
 
 
 
-           }
+            }
 
-           $.connection.hub.logging = true;
-           var vm = new partyListViewModel();
-           ko.applyBindings(vm);
-           // Start the connection
-           $.connection.hub.start(function () { vm.init(); });
+            $.connection.hub.logging = true;
+            var vm = new partyListViewModel();
+            ko.applyBindings(vm);
+            // Start the connection
+            $.connection.hub.start(function () { vm.init(); });
 
-       });
+        });
 
 
-   </script>
+    </script>
 }
-    
 
+<div class="container">
+    <h3>Create a Party
+    </h3>
+    <form>
+        <div class="control-group">
+            <label for="partyName">Party Name</label>
+            <input name="partyName" data-bind="value: newPartyName">
+        </div>
+        <input type="submit" class="btn btn-success btn-large" value="Create!" data-bind="click: createParty"/>
+    </form>
+    <div class="container">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>Players</td>
+                    <td>Party name</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody data-bind="template: { name: 'partyTemplate', foreach: games }, visible: games().length > 0">
+
+            </tbody>
+        </table>
+         <script type="text/html" id="partyTemplate">
+            <tr >
+                <td data-bind="text: playersInGame"></td>
+                <td data-bind="text: name"></td>
+                <td> <a class="btn btn-info" href="#" data-bind="click: join">Join Party! </a>
+                </td>
+                
+            </tr>
+        </script>
+    </div>
+</div>

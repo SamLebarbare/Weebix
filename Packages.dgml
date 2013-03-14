@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DirectedGraph GraphDirection="LeftToRight" xmlns="http://schemas.microsoft.com/vs/2009/dgml">
+  <Nodes>
+    <Node Id="Weebix" Label="Weebix" Category="Project" />
+    <Node Id="EntityFramework 5.0.0" Label="EntityFramework 5.0.0" Category="Package" />
+    <Node Id="EntityFramework.fr 5.0.0" Label="EntityFramework.fr 5.0.0" Category="Package" />
+    <Node Id="jQuery 1.9.1" Label="jQuery 1.9.1" Category="Package" />
+    <Node Id="jQuery.UI.Combined 1.8.20.1" Label="jQuery.UI.Combined 1.8.20.1" Category="Package" />
+    <Node Id="jQuery.Validation 1.9.0.1" Label="jQuery.Validation 1.9.0.1" Category="Package" />
+    <Node Id="knockoutjs 2.2.1" Label="knockoutjs 2.2.1" Category="Package" />
+    <Node Id="Microsoft.AspNet.Mvc 3.0.20105.1" Label="Microsoft.AspNet.Mvc 3.0.20105.1" Category="Package" />
+    <Node Id="Microsoft.AspNet.Mvc.fr 3.0.20105.1" Label="Microsoft.AspNet.Mvc.fr 3.0.20105.1" Category="Package" />
+    <Node Id="Microsoft.AspNet.Providers.Core 1.1" Label="Microsoft.AspNet.Providers.Core 1.1" Category="Package" />
+    <Node Id="Microsoft.AspNet.Providers.Core.fr 1.1" Label="Microsoft.AspNet.Providers.Core.fr 1.1" Category="Package" />
+    <Node Id="Microsoft.AspNet.Providers.LocalDB 1.1" Label="Microsoft.AspNet.Providers.LocalDB 1.1" Category="Package" />
+    <Node Id="Microsoft.AspNet.Razor 1.0.20105.408" Label="Microsoft.AspNet.Razor 1.0.20105.408" Category="Package" />
+    <Node Id="Microsoft.AspNet.Razor.fr 1.0.20105.408" Label="Microsoft.AspNet.Razor.fr 1.0.20105.408" Category="Package" />
+    <Node Id="Microsoft.AspNet.SignalR 1.0.1" Label="Microsoft.AspNet.SignalR 1.0.1" Category="Package" />
+    <Node Id="Microsoft.AspNet.SignalR.Core 1.0.1" Label="Microsoft.AspNet.SignalR.Core 1.0.1" Category="Package" />
+    <Node Id="Microsoft.AspNet.SignalR.JS 1.0.1" Label="Microsoft.AspNet.SignalR.JS 1.0.1" Category="Package" />
+    <Node Id="Microsoft.AspNet.SignalR.Owin 1.0.1" Label="Microsoft.AspNet.SignalR.Owin 1.0.1" Category="Package" />
+    <Node Id="Microsoft.AspNet.SignalR.SystemWeb 1.0.1" Label="Microsoft.AspNet.SignalR.SystemWeb 1.0.1" Category="Package" />
+    <Node Id="Microsoft.AspNet.WebPages 1.0.20105.408" Label="Microsoft.AspNet.WebPages 1.0.20105.408" Category="Package" />
+    <Node Id="Microsoft.AspNet.WebPages.fr 1.0.20105.408" Label="Microsoft.AspNet.WebPages.fr 1.0.20105.408" Category="Package" />
+    <Node Id="Microsoft.Owin.Host.SystemWeb 1.0.0" Label="Microsoft.Owin.Host.SystemWeb 1.0.0" Category="Package" />
+    <Node Id="Microsoft.Web.Infrastructure 1.0.0.0" Label="Microsoft.Web.Infrastructure 1.0.0.0" Category="Package" />
+    <Node Id="Modernizr 2.5.3" Label="Modernizr 2.5.3" Category="Package" />
+    <Node Id="Newtonsoft.Json 4.5.11" Label="Newtonsoft.Json 4.5.11" Category="Package" />
+    <Node Id="Owin 1.0" Label="Owin 1.0" Category="Package" />
+    <Node Id="Twitter.Bootstrap 2.3.1" Label="Twitter.Bootstrap 2.3.1" Category="Package" />
+  </Nodes>
+  <Links>
+    <Link Source="EntityFramework.fr 5.0.0" Target="EntityFramework 5.0.0" Category="Package Dependency" />
+    <Link Source="jQuery.UI.Combined 1.8.20.1" Target="jQuery 1.9.1" Category="Package Dependency" />
+    <Link Source="jQuery.Validation 1.9.0.1" Target="jQuery 1.9.1" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.Mvc 3.0.20105.1" Target="Microsoft.AspNet.WebPages 1.0.20105.408" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.Mvc 3.0.20105.1" Target="Microsoft.AspNet.Razor 1.0.20105.408" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.Mvc.fr 3.0.20105.1" Target="Microsoft.AspNet.Mvc 3.0.20105.1" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.Providers.Core.fr 1.1" Target="Microsoft.AspNet.Providers.Core 1.1" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.Providers.LocalDB 1.1" Target="Microsoft.AspNet.Providers.Core 1.1" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.Razor.fr 1.0.20105.408" Target="Microsoft.AspNet.Razor 1.0.20105.408" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.SignalR 1.0.1" Target="Microsoft.AspNet.SignalR.JS 1.0.1" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.SignalR 1.0.1" Target="Microsoft.AspNet.SignalR.SystemWeb 1.0.1" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.SignalR.Core 1.0.1" Target="Newtonsoft.Json 4.5.11" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.SignalR.JS 1.0.1" Target="jQuery 1.9.1" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.SignalR.Owin 1.0.1" Target="Microsoft.AspNet.SignalR.Core 1.0.1" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.SignalR.Owin 1.0.1" Target="Owin 1.0" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.SignalR.SystemWeb 1.0.1" Target="Microsoft.AspNet.SignalR.Owin 1.0.1" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.SignalR.SystemWeb 1.0.1" Target="Microsoft.Owin.Host.SystemWeb 1.0.0" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.WebPages 1.0.20105.408" Target="Microsoft.Web.Infrastructure 1.0.0.0" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.WebPages 1.0.20105.408" Target="Microsoft.AspNet.Razor 1.0.20105.408" Category="Package Dependency" />
+    <Link Source="Microsoft.AspNet.WebPages.fr 1.0.20105.408" Target="Microsoft.AspNet.WebPages 1.0.20105.408" Category="Package Dependency" />
+    <Link Source="Microsoft.Owin.Host.SystemWeb 1.0.0" Target="Owin 1.0" Category="Package Dependency" />
+    <Link Source="Microsoft.Owin.Host.SystemWeb 1.0.0" Target="Microsoft.Web.Infrastructure 1.0.0.0" Category="Package Dependency" />
+    <Link Source="Twitter.Bootstrap 2.3.1" Target="jQuery 1.9.1" Category="Package Dependency" />
+    <Link Source="Weebix" Target="EntityFramework.fr 5.0.0" Category="Installed Package" />
+    <Link Source="Weebix" Target="jQuery.UI.Combined 1.8.20.1" Category="Installed Package" />
+    <Link Source="Weebix" Target="jQuery.Validation 1.9.0.1" Category="Installed Package" />
+    <Link Source="Weebix" Target="knockoutjs 2.2.1" Category="Installed Package" />
+    <Link Source="Weebix" Target="Microsoft.AspNet.Mvc.fr 3.0.20105.1" Category="Installed Package" />
+    <Link Source="Weebix" Target="Microsoft.AspNet.Providers.Core.fr 1.1" Category="Installed Package" />
+    <Link Source="Weebix" Target="Microsoft.AspNet.Providers.LocalDB 1.1" Category="Installed Package" />
+    <Link Source="Weebix" Target="Microsoft.AspNet.Razor.fr 1.0.20105.408" Category="Installed Package" />
+    <Link Source="Weebix" Target="Microsoft.AspNet.SignalR 1.0.1" Category="Installed Package" />
+    <Link Source="Weebix" Target="Microsoft.AspNet.WebPages.fr 1.0.20105.408" Category="Installed Package" />
+    <Link Source="Weebix" Target="Modernizr 2.5.3" Category="Installed Package" />
+    <Link Source="Weebix" Target="Twitter.Bootstrap 2.3.1" Category="Installed Package" />
+  </Links>
+  <Categories>
+    <Category Id="Project" />
+    <Category Id="Package" />
+  </Categories>
+  <Styles>
+    <Style TargetType="Node" GroupLabel="Project" ValueLabel="True">
+      <Condition Expression="HasCategory('Project')" />
+      <Setter Property="Background" Value="Blue" />
+    </Style>
+    <Style TargetType="Link" GroupLabel="Package Dependency" ValueLabel="True">
+      <Condition Expression="HasCategory('Package Dependency')" />
+      <Setter Property="Background" Value="Yellow" />
+    </Style>
+  </Styles>
+</DirectedGraph>

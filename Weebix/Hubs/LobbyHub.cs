@@ -11,7 +11,7 @@ namespace Weebix.Hubs
     public class LobbyHub : Hub
     {
 
-        public bool CreateParty(Party newParty)
+        public bool CreateParty(string name)
         {
            
             try
@@ -20,9 +20,12 @@ namespace Weebix.Hubs
                 {
                     var party = context.games.Create();
                     party.createdAt = DateTime.Now;
-                    party.name = newParty.name;
+                    party.name = name;
+					party.playersInGame = 1;
+					context.games.Add (party);
                     context.SaveChanges();
-                    this.Clients.Caller.addParty(party);
+                    this.Clients.All.addParty(party);
+					this.Clients.Caller.goToParty (party.partyId);
                     return true;
                 }
             }
@@ -56,20 +59,37 @@ namespace Weebix.Hubs
 
         }
 
-        public void JoinParty()
+        public bool JoinParty(int partyId)
         {
-
+			try
+			{
+				using (var context = new WeebixDoContext ())
+				{
+					var party = context.games.FirstOrDefault (p => p.partyId == partyId);
+					party.playersInGame +=1;
+					context.SaveChanges ();
+					this.Clients.Caller.goToParty (party.partyId);
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				this.Clients.Caller.reportError ("Error : " + ex.Message);
+				return false;
+			}
         }
 
-        public void LeaveParty()
-        {
+		
 
-        }
+		public void GetAll()
+		{
+			using (var context = new WeebixDoContext ())
+			{
+				var res = context.games.ToArray ();
+				this.Clients.All.allGames (res);
+			}
 
-        public void GetPartyInfo()
-        {
-
-        }
+		}
 
 
     }

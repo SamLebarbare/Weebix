@@ -1,0 +1,165 @@
+﻿
+@{
+    ViewBag.Title = "Party";
+}
+@section headscript
+{
+    <script src="/Scripts/jquery.signalR-1.0.1.min.js" type="text/javascript"></script>
+    <script src="/signalr/hubs" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            function PartyViewModel() {
+
+                this.partyHub = $.connection.partyHub;
+                var self = this;
+                var notify = true;
+
+                this.isPartyMaker = ko.observable(false);
+                this.isGameStarted = ko.observable(false);
+                this.choosedTheme = "";
+                this.players = ko.observable();
+                this.theme = ko.observable("Theme: ");
+                this.themeIsSelected = ko.observable(true);
+                //give a model access for hub callbacks
+                var players = this.players;
+                var theme = this.theme;
+                var themeIsSelected = this.themeIsSelected;
+                var isPartyMaker = this.isPartyMaker;
+                var isGameStarted = this.isGameStarted;
+
+                this.readyToStart = ko.computed(function () {
+                    if (Number(this.players()) <= 2)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                    
+                }, this);
+
+                //Initializes the view model
+                this.init = function () {
+                    this.partyHub.server.getPlayers(@ViewBag.partyId);
+                };
+
+                //Handlers for our Hub callbacks
+
+                this.partyHub.client.setPlayers = function (pId,nb) {
+                    if(pId == @ViewBag.partyId)
+                    {
+                        if (nb == 1&&isPartyMaker()==false) {
+                        isPartyMaker(true);
+                    }
+                    players(nb);
+                    }
+                    
+                };
+
+                this.partyHub.client.setTheme = function (pId,t) {
+                    if(pId == @ViewBag.partyId)
+                    {
+                        theme("Theme: " + t);
+                        themeIsSelected(false);
+                    }
+                };
+
+                this.partyHub.client.startGame = function (pId) {
+                    if(pId == @ViewBag.partyId)
+                    {
+                        isGameStarted(true);
+                    }
+                };
+
+                this.partyHub.client.goToLobby = function (pId) {
+                    if(pId == @ViewBag.partyId)
+                    {
+                        window.location.href = "/lobby/";
+                    }
+
+                    
+                };
+
+        //View Model 'Commands'
+                this.start = function () {
+                    this.partyHub.server.startGame( @ViewBag.partyId);
+
+                };
+
+                this.propose = function () {
+                    this.partyHub.server.proposeTheme( @ViewBag.partyId ,this.choosedTheme);
+
+                };
+
+                this.leave = function () {
+                    
+                    this.partyHub.server.leaveParty(@ViewBag.partyId);
+
+                    if (isPartyMaker()) {
+                        
+                        this.partyHub.server.flushParty(@ViewBag.partyId);
+                    }
+
+                };
+            }
+
+          
+
+            $.connection.hub.logging = true;
+            
+            var vm = new PartyViewModel();
+            ko.applyBindings(vm);
+            // Start the connection
+            $.connection.hub.start(function () { vm.init(); });
+
+        });
+
+
+    </script>
+}
+<div class="hero-unit">
+      <div>
+        <h1>@ViewBag.name party</h1>
+        <p data-bind="text: players"></p><p> player(s)</p>
+        
+        <div data-bind="visible : !isGameStarted()">
+             <a class="btn btn-danger btn-large" href="#" data-bind="click: leave">Leave Party</a>
+             <a class="btn btn-inverse btn-large" href="#" data-bind="visible : !readyToStart()">Need more player to start</a>
+             <div data-bind="visible : isPartyMaker">
+                <a class="btn btn-success btn-large" href="#" data-bind="click : start, visible : readyToStart()">Start Game!</a>
+             </div>
+         </div>
+    </div>
+</div>
+
+     
+
+ 
+
+    <div class="container" data-bind="visible : isGameStarted()">
+      <h1 data-bind="text: theme"></h1>
+      <hr>
+      <div data-bind="visible : themeIsSelected">
+          <h3>
+            Choose a card :
+          </h3>
+          <div class="row">
+            <div class="span4">
+            </div>
+            <div class="span4">
+            </div>
+            <div class="span4">
+            </div>
+          </div>
+            <div class="control-group">
+              <label for="textinput1">
+                Theme proposal
+              </label>
+              <input type="text" data-bind="value: choosedTheme" />
+            </div>
+            <a class="btn" href="#" data-bind="click: propose">Propose theme</a>
+        </div>
+      </div>
+      

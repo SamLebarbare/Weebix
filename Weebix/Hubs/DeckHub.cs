@@ -20,7 +20,7 @@ namespace Weebix
                     var card = context.deck.FirstOrDefault(c => c.cardId == cardId);
                     context.deck.Remove(card);
                     context.SaveChanges();
-                    this.Clients.Caller.cardRemoved(card.cardId);
+                    this.Clients.All.cardRemoved(card.cardId);
                     return true;
                 }
             }
@@ -38,7 +38,7 @@ namespace Weebix
             using (var context = new WeebixDoContext())
             {
                 var res = context.deck.ToArray();
-                this.Clients.Caller.deckAll(res);
+                this.Clients.All.deckAll(res);
             }
 
         }

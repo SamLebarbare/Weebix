@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Weebix.Models;
 
 namespace Weebix
 {
@@ -40,6 +41,8 @@ namespace Weebix
 
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
+
+			Database.SetInitializer (new DropCreateDatabaseAlways<WeebixDoContext> ());
         }
     }
 }
