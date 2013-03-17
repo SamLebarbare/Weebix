@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Weebix.Models;
+using YamlDotNet.RepresentationModel;
 
 namespace Weebix
 {
@@ -43,6 +45,45 @@ namespace Weebix
             RegisterRoutes(RouteTable.Routes);
 
 			Database.SetInitializer (new DropCreateDatabaseAlways<WeebixDoContext> ());
+
+            InitYamlData();
+        }
+
+
+        public void InitYamlData()
+        {
+            var input = new StreamReader(Path.Combine(Server.MapPath("~/yaml/"), "deck.yml"));
+
+            // Load the stream
+            var yaml = new YamlStream();
+            yaml.Load(input);
+
+
+            // Examine the stream
+            var mapping = (YamlMappingNode)yaml.Documents[0].RootNode;
+
+            foreach (var entry in mapping.Children)
+            {
+                Console.WriteLine(((YamlScalarNode)entry.Key).Value);
+            }
+
+            // Load all the cards in the deck
+            var cards = (YamlSequenceNode)mapping.Children[new YamlScalarNode("deck")];
+            foreach (YamlMappingNode card in cards)
+            {
+
+               /* var file = File( card.Single().Value.ToString());
+                using (var context = new WeebixDoContext())
+                {
+                    var cardToAdd = context.deck.Create();
+
+                    cardToAdd.path = ...
+                    context.deck.Add(cardToAdd);
+                    context.SaveChanges();
+
+
+                }*/
+            }
         }
     }
 }
