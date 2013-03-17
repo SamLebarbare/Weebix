@@ -12,21 +12,39 @@
             function PartyViewModel() {
 
                 this.partyHub = $.connection.partyHub;
+                var partyHub = this.partyHub;
                 var self = this;
                 var notify = true;
-
+                var playerId = null;
+                var playerIdNotSet = true;
                 this.isPartyMaker = ko.observable(false);
                 this.isGameStarted = ko.observable(false);
                 this.choosedTheme = "";
+                this.choosedCard = null;
                 this.players = ko.observable();
-                this.theme = ko.observable("Theme: ");
-                this.themeIsSelected = ko.observable(true);
+                this.theme = ko.observable();
+                this.cardIsSelected = ko.observable(false);
+                this.themeIsSelected = ko.observable(false);
+                this.myTurn = ko.observable(false);
+
+
+                this.cardSlot1 = ko.observable("/Content/images/slot.png");
+                this.cardSlot2 = ko.observable("/Content/images/slot.png");
+                this.cardSlot3 = ko.observable("/Content/images/slot.png");
+                this.themeCardSlot = ko.observable("/Content/images/slot.png");
+
                 //give a model access for hub callbacks
                 var players = this.players;
                 var theme = this.theme;
                 var themeIsSelected = this.themeIsSelected;
+                var cardIsSelected = this.cardIsSelected;
                 var isPartyMaker = this.isPartyMaker;
+                var myTurn = this.myTurn;
                 var isGameStarted = this.isGameStarted;
+                var slot1 = this.cardSlot1;
+                var slot2 = this.cardSlot2;
+                var slot3 = this.cardSlot3;
+                var slotT = this.themeCardSlot;
 
                 this.readyToStart = ko.computed(function () {
                     if (Number(this.players()) <= 2)
@@ -50,10 +68,17 @@
                 this.partyHub.client.setPlayers = function (pId,nb) {
                     if(pId == @ViewBag.partyId)
                     {
-                        if (nb == 1&&isPartyMaker()==false) {
-                        isPartyMaker(true);
-                    }
-                    players(nb);
+                        if(playerIdNotSet)
+                        {
+                            playerId = nb;
+                            playerIdNotSet = false;
+                        }    
+                        if (nb == 1&&isPartyMaker()==false) 
+                        {
+                            isPartyMaker(true);
+                            myTurn(true);
+                        }
+                        players(nb);
                     }
                     
                 };
@@ -61,8 +86,8 @@
                 this.partyHub.client.setTheme = function (pId,t) {
                     if(pId == @ViewBag.partyId)
                     {
-                        theme("Theme: " + t);
-                        themeIsSelected(false);
+                        theme(t);
+                        themeIsSelected(true);
                     }
                 };
 
@@ -70,9 +95,30 @@
                     if(pId == @ViewBag.partyId)
                     {
                         isGameStarted(true);
+                        
+                        
                     }
                 };
 
+                this.partyHub.client.giveCards = function (pId,cards) {
+                    if(pId == @ViewBag.partyId)
+                    {
+                        slot1(cards[0].path);
+                        slot2(cards[1].path);
+                        slot3(cards[2].path);
+                        myTurn(false);
+                    }
+                };
+
+                this.partyHub.client.ChangePlayer = function (pId,nextPlayerId) {
+                    if(pId == @ViewBag.partyId)
+                    {
+                        if(nextPlayerId == playerId)
+                        {
+                            myTurn(true);
+                        }
+                    }
+                };    
                 this.partyHub.client.goToLobby = function (pId) {
                     if(pId == @ViewBag.partyId)
                     {
@@ -88,7 +134,13 @@
 
                 };
 
+                this.getCards = function () {
+                    this.partyHub.server.getCards( @ViewBag.partyId,playerId);
+
+                };
+
                 this.propose = function () {
+
                     this.partyHub.server.proposeTheme( @ViewBag.partyId ,this.choosedTheme);
 
                 };
@@ -103,7 +155,23 @@
                     }
 
                 };
-            }
+
+                this.chooseThe1 = function () {
+                    
+                    slotT(slot1());
+
+                };
+                this.chooseThe2 = function () {
+                    
+                    slotT(slot2());
+
+                };
+                this.chooseThe3 = function () {
+                    
+                    slotT(slot3());
+
+                };
+            }//end party view model
 
           
 
@@ -132,6 +200,10 @@
              </div>
          </div>
     </div>
+     <div data-bind="visible : themeIsSelected()">
+        <h2>My Card:</h2>
+        <img src="" width="145" height="200" class="img-polaroid" data-bind="attr: { src: themeCardSlot() } " />
+     </div>
 </div>
 
      
@@ -139,27 +211,52 @@
  
 
     <div class="container" data-bind="visible : isGameStarted()">
-      <h1 data-bind="text: theme"></h1>
-      <hr>
-      <div data-bind="visible : themeIsSelected">
+
+        <div data-bind="visible : !themeIsSelected()">
+            <div data-bind="visible : myTurn()">
+                <a class="btn btn-success btn-large" href="#" data-bind="click : getCards">Card please!</a>
+            </div>
+             
+             <div class="row">
+                <div class="span4">
+                <img src="" width="145" height="200" class="img-polaroid" data-bind="attr: { src: cardSlot1() } " />
+                </div>
+                <div class="span4">
+                    <img src="" width="145" height="200" class="img-polaroid" data-bind="attr: { src: cardSlot2() } " />
+                </div>
+                <div class="span4">
+                    <img src="" width="145" height="200" class="img-polaroid" data-bind="attr: { src: cardSlot3() } " />
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="textinput1">Theme proposal</label>
+                <input type="text" data-bind="value: choosedTheme" />
+                <a class="btn" href="#" data-bind="click: propose">Propose theme</a>
+            </div>
+        </div>
+
+    
+
+      
+      <div data-bind="visible : themeIsSelected()">
           <h3>
-            Choose a card :
+            Choose a card for the theme:
           </h3>
+          <h2 data-bind="text: theme"></h2>   
           <div class="row">
             <div class="span4">
+                <img src="" width="145" height="200" class="img-polaroid" data-bind="attr: { src: cardSlot1() },click : chooseThe1 " />
             </div>
             <div class="span4">
+                <img src="" width="145" height="200" class="img-polaroid" data-bind="attr: { src: cardSlot2() },click : chooseThe2 " />
             </div>
             <div class="span4">
+                <img src="" width="145" height="200" class="img-polaroid" data-bind="attr: { src: cardSlot3() },click : chooseThe3 " />
             </div>
           </div>
-            <div class="control-group">
-              <label for="textinput1">
-                Theme proposal
-              </label>
-              <input type="text" data-bind="value: choosedTheme" />
-            </div>
-            <a class="btn" href="#" data-bind="click: propose">Propose theme</a>
+            
+                
         </div>
+        
       </div>
       

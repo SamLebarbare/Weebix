@@ -10,6 +10,7 @@ namespace Weebix.Models
     {
         public DbSet<Card> deck { get; set; }
         public DbSet<Party> games { get; set; }
+        public DbSet<CardDistributor> distributors { get; set; }
 
     }
 }

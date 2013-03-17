@@ -15,6 +15,7 @@ namespace Weebix.Hubs
 		public void StartGame(int partyId)
 		{
 			this.Clients.All.startGame (partyId);
+
 		}
 		
 
@@ -22,6 +23,34 @@ namespace Weebix.Hubs
 		{
 			this.Clients.All.setTheme (partyId,theme);
 		}
+
+        public void GetCards(int partyId,int playerId)
+        {
+            try
+            {
+                using (var context = new WeebixDoContext())
+                {
+                    var party = context.games.FirstOrDefault(p => p.partyId == partyId);
+                    var distrib = context.distributors.FirstOrDefault(d => d.distributorId == party.ditributorId);
+                    var cards = context.deck.ToArray().Skip(distrib.lastIndex).Take(3);
+
+                    distrib.lastIndex += 3;
+                    context.SaveChanges();
+
+                    var nextPlayerId = playerId + 1;
+
+                    this.Clients.Caller.giveCards(partyId, cards);
+
+                    this.Clients.All.changePlayer(partyId, nextPlayerId);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                this.Clients.Caller.reportError("Error : " + ex.Message);
+            }
+        }
+
 		public void GetPlayers(int partyId)
 		{
 			try
@@ -67,6 +96,8 @@ namespace Weebix.Hubs
 				using (var context = new WeebixDoContext ())
 				{
 					var party = context.games.FirstOrDefault (p => p.partyId == partyId);
+                    var distrib = context.distributors.FirstOrDefault(d => d.distributorId == party.ditributorId);
+                    context.distributors.Remove(distrib);
 					context.games.Remove (party);
 					context.SaveChanges ();
 					

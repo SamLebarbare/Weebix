@@ -125,6 +125,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Card.cs" />
     <Compile Include="Hubs\DeckHub.cs" />
+    <Compile Include="Models\CardDistributor.cs" />
     <Compile Include="Models\Party.cs" />
     <Compile Include="Models\WeebixDoContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

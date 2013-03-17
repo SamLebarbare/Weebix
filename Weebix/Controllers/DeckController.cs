@@ -27,9 +27,9 @@ namespace Weebix.Controllers
                 // extract only the fielname             
                 var fileName = Path.GetFileName(file.FileName);
                 // store the file inside ~/images/User-Image folder             
-                var path = Path.Combine(Server.MapPath("~/Content/images/"), fileName);
+                var path = Path.Combine(Server.MapPath("~/images/deck/"), fileName);
 
-                string filepathToSave = "Content/images/" + fileName;
+                string filepathToSave = "/images/deck/" + fileName;
                 file.SaveAs(path);
 
                 using (var context = new WeebixDoContext())

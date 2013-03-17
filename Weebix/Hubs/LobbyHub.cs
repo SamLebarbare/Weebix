@@ -18,10 +18,17 @@ namespace Weebix.Hubs
             {
                 using (var context = new WeebixDoContext())
                 {
+                    var distrib = context.distributors.Create();
+                    distrib.lastIndex = 0;
+                    context.distributors.Add(distrib);
+                    context.SaveChanges();
+                    
+              
                     var party = context.games.Create();
                     party.createdAt = DateTime.Now;
                     party.name = name;
 					party.playersInGame = 1;
+                    party.ditributorId = distrib.distributorId;
 					context.games.Add (party);
                     context.SaveChanges();
                     this.Clients.All.addParty(party);
