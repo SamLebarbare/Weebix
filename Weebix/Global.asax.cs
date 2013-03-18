@@ -38,7 +38,7 @@ namespace Weebix
         {
             AreaRegistration.RegisterAllAreas();
 
-            // Utiliser LocalDB pour Entity Framework par défaut
+            
             Database.DefaultConnectionFactory = new SqlConnectionFactory(@"Data Source=(localdb)\v11.0; Integrated Security=True; MultipleActiveResultSets=True");
 
             RegisterGlobalFilters(GlobalFilters.Filters);
@@ -72,17 +72,24 @@ namespace Weebix
             foreach (YamlMappingNode card in cards)
             {
 
-               /* var file = File( card.Single().Value.ToString());
+                var file = new FileInfo( card.Single().Value.ToString());
+
+                // store the file inside ~/images/User-Image folder             
+                var path = Path.Combine(Server.MapPath("~/images/deck/"), file.Name);
+
+                string filepathToSave = "/images/deck/" + file.Name;
+
+				file.CopyTo(path,true);
+
                 using (var context = new WeebixDoContext())
                 {
                     var cardToAdd = context.deck.Create();
 
-                    cardToAdd.path = ...
+					cardToAdd.path = filepathToSave;
                     context.deck.Add(cardToAdd);
                     context.SaveChanges();
 
-
-                }*/
+                }
             }
         }
     }
